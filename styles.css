@@ -1,0 +1,146 @@
+:root{
+    --letter-size: 70px;
+    --almost-letter-border-radius: 32px;
+    --word-input-size: 400px;
+    --border-thickness: 2px;
+    --game-width: 650px;
+}
+html {
+    scroll-behavior: smooth;
+}
+body {
+    background-color: white ;
+}
+#container{
+    width: var(--game-width);
+    margin: auto;
+    margin-top:30px;    
+    position: relative;
+}
+#container-left-column{
+    width: 100px;
+    height: 350px;
+    float: left;
+    position: absolute;
+    bottom: 199px;
+}
+#container-right-column{
+    margin-left: 120px;
+    overflow: hidden;
+}
+#container-board{
+    display: inline-block;
+    margin-left: 30px;
+}
+#board{
+    border: var(--border-thickness) solid #575757;
+    margin: 0;
+    padding: 0;
+    float: left;
+
+}
+
+.word-row{
+    
+    margin: 0;
+    padding: 0;
+}
+
+.letter {
+    width: var(--letter-size);
+    height: var(--letter-size);
+    float: left;
+    border: var(--border-thickness) solid #575757;
+    margin: 0;
+    padding: 0;
+
+}
+.letter > * {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    font-size: 50px;
+    line-height: 70px;
+}
+.correct-letter{
+    background-color: var(--green);
+}
+.almost-letter{
+    border-radius: var(--almost-letter-border-radius);
+    background-color: var(--yellow);
+}
+#word-input{
+    width: var(--word-input-size);
+    
+}
+#input-guess    {
+    margin-top: 30px;
+    float: left;
+}
+#container-alerts{
+    position: fixed;
+    top: 10px;
+    width: var(--game-width);
+    z-index: 999;
+}
+
+#score{
+    margin-bottom: 30px;
+    width: 100%;
+    text-align: center;
+}
+.score-alert{
+    position: absolute;
+    top:0px;
+
+
+}
+.progress-bar-vertical{
+    width: 12px;
+    min-height: 286px;
+    margin-right: 20px;
+    border-radius: 10px !important;
+    display: flex;
+    flex-direction: column-reverse;
+ }   
+
+
+.progress-bar-vertical .progress-bar{
+    width: 100%;
+    height: 0;
+    -webkit-transition: height 0.6s ease;
+    -o-transition: height 0.6s ease;
+    transition: height 0.6s ease;
+    display:block;
+ }
+
+ .card-module{
+     padding:20px;
+     background-color: var(--light);
+     overflow: hidden;
+     border-radius: 5px;
+     border-color: #e0e0e0;
+     border-style: solid;
+     border-width: 0px 1px 1px 0px;
+ }
+.shaking {
+    /* Start the shake animation and make the animation last for 0.5 seconds */
+    animation: shake 0.5s;
+
+    /* When the animation is finished, start again */
+    animation-iteration-count: infinite;
+}
+
+@keyframes shake {
+    0% { transform: translate(1px, 1px) rotate(0deg); }
+    10% { transform: translate(-1px, -2px) rotate(-1deg); }
+    20% { transform: translate(-3px, 0px) rotate(1deg); }
+    30% { transform: translate(3px, 2px) rotate(0deg); }
+    40% { transform: translate(1px, -1px) rotate(1deg); }
+    50% { transform: translate(-1px, 2px) rotate(-1deg); }
+    60% { transform: translate(-3px, 1px) rotate(0deg); }
+    70% { transform: translate(3px, 1px) rotate(-1deg); }
+    80% { transform: translate(-1px, -1px) rotate(1deg); }
+    90% { transform: translate(1px, 2px) rotate(0deg); }
+    100% { transform: translate(1px, -2px) rotate(-1deg); }
+}
