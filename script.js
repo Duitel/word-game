@@ -12,14 +12,14 @@ function shakeGame(timeMs){
 
 function setTimerInterval(){
     timer.style.height = "100%";
-    return setInterval(() => {
+    return setInterval(async () => {
         let height = timer.style.height;
         height = Number(height.slice(0,height.length-1));
         height -= 100/timePerGuess;
         timer.style.height = String(height) + "%"
         if(height <= 0){
             goToNextRow();
-            hintLetters();
+            await hintLetters();
             stopTimeInterval(1000);
             // Shake the board ass penalty
             // TODO add buzzer sound
@@ -42,8 +42,11 @@ function showAlert(message){
 
 function stopTimeInterval(restartAfterMs){
     clearInterval(currentTimerInterval);
+    if(currentRestartTimeout){
+        clearTimeout(currentRestartTimeout);
+    }
     if(restartAfterMs >= 0){
-        setTimeout(() => {
+        currentRestartTimeout = setTimeout(() => {
             timer.style.height = "100%";
             currentTimerInterval = setTimerInterval();
         }, restartAfterMs);
@@ -73,6 +76,7 @@ function makeAlertTemplate(){
 const board = document.getElementById("board");
 const timer = document.getElementById("timer");
 var currentTimerInterval = setTimerInterval();
+var currentRestartTimeout;
 const score = document.getElementById("score");
 const scoreValue = document.getElementById("score-value");
 const alertDiv = document.getElementById("container-alerts");
@@ -307,6 +311,7 @@ async function tryWord(){
        
     if (checkValidityInput(inputText)){
         // stop timer
+        clearInterval(currentTimerInterval);
         stopTimeInterval(-1);
         //Add score
         addScore(Number(timer.style.height.slice(0,timer.style.height.length-1)));
