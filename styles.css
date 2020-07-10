@@ -4,36 +4,102 @@
     --word-input-size: 400px;
     --border-thickness: 2px;
     --game-width: 650px;
+    --color1: white;
+    --color2: #e0e0e0;
+    --color3: #575757;
+    --color4: black;
 }
 html {
     scroll-behavior: smooth;
 }
 body {
-    background-color: white ;
+    background-color: var(--color1) ;
 }
+
+@keyframes flyContentInFromside{
+    0%{
+        /* left: -100vw; */
+        margin-left: -500px;
+        width: 400vw;
+        overflow: hidden;
+    }
+    90%{
+        width: 500px;
+    }
+    100%{
+        /* left: 0; */
+        width: var(--game-width);
+    }
+}
+
 #container{
     width: var(--game-width);
+    height:700px;
     margin: auto;
     margin-top:30px;    
     position: relative;
+    overflow: hidden;
+    /* animation: flyContentInFromside 4s ease-in-out; */
 }
+@keyframes flyInFromLeft{
+    0% {
+        left: -700px;
+        /* transform: rotate(-1deg); */
+    }
+    85%{
+        left: 30px;
+        /* transform: rotate(-5deg); */
+    }
+    100%{
+        left: 0;
+        /* transform: rotate(0deg); */
+    }
+}
+
 #container-left-column{
     width: 100px;
-    height: 350px;
-    float: left;
-    position: absolute;
-    bottom: 199px;
+    /* height: 350px; */
+    /* float: left; */
+    position: relative;
+    /* bottom: 199px; */
+    animation: flyInFromLeft 0.5s ease-in-out;
 }
+@keyframes flyInFromRight{
+    0% {
+        right: -700px;
+        /* transform: rotate(-1deg); */
+    }
+    85%{
+        right: 30px;
+        /* transform: rotate(-5deg); */
+    }
+    100%{
+        right: 0;
+        /* transform: rotate(0deg); */
+    }
+}
+
 #container-right-column{
-    margin-left: 120px;
+    width: 530px;
+    position: absolute;
+
     overflow: hidden;
+    top: 0;
+    right: 0;
+    animation: flyInFromRight 0.5s ease-in-out;
 }
 #container-board{
     display: inline-block;
     margin-left: 30px;
+    position: relative;
+    /* animation-name: boardFromRight; */
+    /* animation-duration: 0.5s; */
+    /* animation-timing-function: ease-in-out; */
 }
+
+
 #board{
-    border: var(--border-thickness) solid #575757;
+    border: var(--border-thickness) solid var(--color3);
     margin: 0;
     padding: 0;
     float: left;
@@ -46,21 +112,53 @@ body {
     padding: 0;
 }
 
+
+@keyframes growLetter{
+    0%{
+        height: 0px;
+        margin: 0;
+        font-size: 0px;
+        /* transform: rotate(180deg); */
+    }
+    /* 90%{ */
+        /* height: 80px; */
+        /* margin: -5px; */
+    /* } */
+    100%{
+        height: var(--letter-size);
+        margin: 0;
+        font-size: 50px;
+        /* transform: rotate(0deg); */
+    }
+}
+
 .letter {
     width: var(--letter-size);
     height: var(--letter-size);
+    color: var(--color4);
     float: left;
-    border: var(--border-thickness) solid #575757;
+    border: var(--border-thickness) solid var(--color3);
     margin: 0;
     padding: 0;
-
+    animation-name: growLetter;
+    animation-duration: 0.5s;
+    font-size: 50px;
+}
+@keyframes fadeIn{
+    0%{
+        opacity: 0;
+    }
+    100%{
+        opacity: 1;
+    }
 }
 .letter > * {
     width: 100%;
     height: 100%;
     text-align: center;
-    font-size: 50px;
+    /* font-size: 50px; */
     line-height: 70px;
+    animation: fadeIn 0.5s;
 }
 .correct-letter{
     background-color: var(--green);
@@ -73,9 +171,21 @@ body {
     width: var(--word-input-size);
     
 }
+@keyframes flyInFromBelow{
+    0%{
+        top: 100vh;
+    }
+    100%{
+        top:0vh;
+    }
+}
+
 #input-guess    {
     margin-top: 30px;
     float: left;
+    /* animation-name: flyInFromBelow; */
+    /* animation-duration: 4s; */
+    position: relative;
 }
 #container-alerts{
     position: fixed;
@@ -83,11 +193,22 @@ body {
     width: var(--game-width);
     z-index: 999;
 }
+@keyframes flyInFromAbove{
+    0%{
+        top: -100vh;
+    }
+    100%{
+        top: 0vh;
+    }
+
+}
 
 #score{
     margin-bottom: 30px;
     width: 100%;
     text-align: center;
+    /* animation-name: flyInFromabove; */
+    /* animation-duration: 1s; */
 }
 .score-alert{
     position: absolute;
@@ -119,7 +240,7 @@ body {
      background-color: var(--light);
      overflow: hidden;
      border-radius: 5px;
-     border-color: #e0e0e0;
+     border-color: var(--color2);
      border-style: solid;
      border-width: 0px 1px 1px 0px;
  }

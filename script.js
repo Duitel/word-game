@@ -10,21 +10,24 @@ function shakeGame(timeMs){
     }, timeMs);
 };
 
-function setTimerInterval(){
-    timer.style.height = "100%";
+function setTimerInterval(restartTimer){
+    if(restartTimer){
+        timer.style.height = "100%";
+    }
     return setInterval(async () => {
         let height = timer.style.height;
         height = Number(height.slice(0,height.length-1));
         height -= 100/timePerGuess;
         timer.style.height = String(height) + "%"
-        if(height <= 0){
-            goToNextRow();
-            await hintLetters();
+        if(height <= -1){
+            
             stopTimeInterval(1000);
             // Shake the board ass penalty
             // TODO add buzzer sound
-            shakeGame(1000);
+            shakeGame(500);
             addScore(-10);
+            goToNextRow();
+            await hintLetters();
             // Alert user of time running out
             showAlert("<strong>Warning!</strong> The time ran out.");
         }
@@ -39,16 +42,23 @@ function showAlert(message){
     alertDiv.appendChild(localAlertTemplate);
     removeFirstAlert(localAlertTemplate);
 }
-
-function stopTimeInterval(restartAfterMs){
+function clearTimerIntervals(){
+    //if(currentRestartTimeout){
+    clearTimeout(currentRestartTimeout);
+    //}
     clearInterval(currentTimerInterval);
-    if(currentRestartTimeout){
-        clearTimeout(currentRestartTimeout);
-    }
+}
+function stopTimeInterval(restartAfterMs){
+    clearTimerIntervals();  
     if(restartAfterMs >= 0){
+        animationPlaying = true;
         currentRestartTimeout = setTimeout(() => {
             timer.style.height = "100%";
-            currentTimerInterval = setTimerInterval();
+            clearTimerIntervals();
+            if(canRestartTimer){
+                currentTimerInterval = setTimerInterval(true);
+            }
+            animationPlaying = false;
         }, restartAfterMs);
     }
 }
@@ -73,10 +83,12 @@ function makeAlertTemplate(){
     return alertTemplate;
 }
 
+var canRestartTimer = true
 const board = document.getElementById("board");
 const timer = document.getElementById("timer");
-var currentTimerInterval = setTimerInterval();
+var currentTimerInterval = setTimerInterval(true);
 var currentRestartTimeout;
+var animationPlaying = false;
 const score = document.getElementById("score");
 const scoreValue = document.getElementById("score-value");
 const alertDiv = document.getElementById("container-alerts");
@@ -84,11 +96,14 @@ const emptyWordRow = board.children[2].cloneNode(true);
 
 const input = document.getElementById("word-input");
 
-var correctWord =  woorden[Math.floor(Math.random() * woorden.length)].toUpperCase();
+var correctWord =  'DUIVEL'//woorden[Math.floor(Math.random() * woorden.length)].toUpperCase();
 var lettersGuessed = new Array(correctWord.length).fill('.');
 lettersGuessed[0] = correctWord[0]
 
 const alertTemplate = makeAlertTemplate();
+
+// For working on css
+clearTimerIntervals();
 
 function createAudio(src) {
     snds = new Array(4);
@@ -277,17 +292,17 @@ function checkValidityInput(inputText){
     let penaltyscore = -5;
     if (inputText.length < correctWord.length){
         showAlert("<strong>Error!</strong> The word you tried has to <strong>few</strong> letters.");
-        shakeGame(500);
+        shakeGame(250);
         addScore(penaltyscore);
         return false;
     } else if (inputText.length > correctWord.length){
         showAlert("<strong>Error!</strong> The word you tried has to <strong>many</strong> letters.");
-        shakeGame(500);
+        shakeGame(250);
         addScore(penaltyscore);
         return false;
     } else if (woorden.includes(inputText.toLowerCase()) == false){
         showAlert("<strong>Error!</strong> The word you tried is <strong>unknown</strong>.");
-        shakeGame(500);
+        shakeGame(250);
         addScore(penaltyscore);
         return false;
     }
@@ -296,20 +311,33 @@ function checkValidityInput(inputText){
 
 function goToNextRow(){
     currentWordRow += 1;
-    if (currentWordRow >= board.children.length - 1){
-        board.appendChild(emptyWordRow.cloneNode(true));
-    }
-    input.scrollIntoView(false, 20);
+    // if (currentWordRow >= board.children.length - 1){
+    //     board.removeChild(board.firstChild)
+    //     board.appendChild(emptyWordRow.cloneNode(true));
+    //     //currentWordRow -= 1;
+    // }
+    // input.scrollIntoView(false, 20);
+    
 }
 
 //initialize the first row
 var currentWordRow = 0;
-hintLetters();
+setTimeout(hintLetters, 500);
 
 async function tryWord(){
+    if(animationPlaying){
+        setTimeout(() =>{
+            tryWord();
+        },100);
+        return;
+    }
+    // "pause" timer
+    clearInterval(currentTimerInterval);
+        
     const inputText = input.value;
        
     if (checkValidityInput(inputText)){
+        canRestartTimer = false;
         // stop timer
         clearInterval(currentTimerInterval);
         stopTimeInterval(-1);
@@ -329,17 +357,27 @@ async function tryWord(){
         //console.log(board.children.length);
         const resultLetters = checkLetters(letters, [...correctWord]);
         await putWordInRow(letters, resultLetters, wordRow, true, 200);
-        console.log(window);
 
+        // Word is guessed
+        if (resultLetters.every( (val) => val === 1 )){
+            alert("You have guessed the word. Wel Done!");// Refresh to play a new word.")
+        }
 
-        
-        console.log(lettersGuessed);
+        //Word not guessed and last row
+        if(currentWordRow == board.children.length){
+            alert("Helaas pindakaas! Het woord is niet geraden.")
+        }
+
         // only hint if the player has not already inputed a next word
         if (currentWordRow <= wordRow2){
             await hintLetters();
         }
         // restart timer
-        currentTimerInterval = setTimerInterval();
+        canRestartTimer = true;
+        currentTimerInterval = setTimerInterval(true);
+    } else{
+        // unpause timer
+        currentTimerInterval = setTimerInterval(false);
     }
     
 }
